@@ -1,24 +1,22 @@
 # EMmqtt
-[English](README.md) 中文版
 
-esp8266-mqtt无线模块是emakefun公司基于乐鑫科技的wifi芯片ESP8266基础上重新研发的串口转wifi的物联网模块，该模块采用AT配置方式来支持wifi无线通信，AT指令全面兼容[乐鑫官方指令库（V3.0.0）](https://www.espressif.com/sites/default/files/documentation/4a-esp8266_at_instruction_set_cn.pdf)，在此基础上添加了MQTT指令，并且全部封装成scratch，mixly，Makecode图形化编程块支持arduino，micro:bit。让用户非常容易接收和发送物联网信息，远程物联网控制从未如此简单。
+esp8266‑mqtt is an ESP8266‑based serial-to‑Wi‑Fi IoT module by emakefun. The module uses AT commands (compatible with Espressif's AT instruction set — V3.0.0) and adds MQTT extensions. It is packaged as blocks for Scratch, Mixly and MakeCode and supports Arduino and micro:bit — making it easy to send and receive IoT messages and control devices remotely.
 
 ![image](image/index.png)
 
-## 硬件参数
+## Hardware specifications
+- Operating voltage: 5 V
+- Serial interface rate: 9600 bps
+- Wireless frequency: 2.4 GHz
+- Connector: PH2.0‑4Pin (G V RX TX)
+- Wireless modes: IEEE 802.11 b/g/n
+- SRAM: 160 KB
+- External Flash: 4 MB
+- Low power support: < 240 mA
+- Module dimensions: 4 × 2.1 cm
+- Mounting: M4 screw and nut
 
-- 工作电压：5V
-- 接口速率：9600 bps
-- 无线频率：2.4GHz
-- 接口类型：PH2.0-4Pin (G V TX TX)
-- 无线模式：IEEE802.11b/g/n
-- SRAM：160KB
-- 外置Flash：4MB
-- 支持低功耗：<240mA
-- 模块尺寸：4 * 2.1cm
-- 安装方式：M4螺钉螺母固定
-
-## 模块特点：
+## Key features
 
 - 内置低功率 32 位 CPU：可以兼作应用处理器
 - 内置协议：TCP/IP 协议栈
@@ -26,20 +24,20 @@ esp8266-mqtt无线模块是emakefun公司基于乐鑫科技的wifi芯片ESP8266�
 - 支持乐鑫官方AT标准指令集
 - 支持连接标准MQTT协议和TTL串口到无线的应用
 
-## MQTT扩展AT指令
+## MQTT — Extended AT commands
 
-### AT+MQTTUSERCFG - 配置 MQTT 用户属性
-设置指令:
+### AT+MQTTUSERCFG — Configure MQTT user properties
+Command:
 AT+MQTTUSERCFG=<LinkID>,<scheme>,<"client_id">,<"username">,<"password">,<cert_key_ID>,<CA_ID>,<"path">
 
-功能:
-设置 MQTT 用户配置
+Purpose:
+Set MQTT user configuration.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
 LinkID: 当前只支持 0
 scheme:
@@ -54,19 +52,19 @@ scheme:
 9: MQTT over WebSocket Secure(based on TLS, provide client certificate)
 10: MQTT over WebSocket Secure(based on TLS, verify server certificate and provide client certificate)
 client_id: 对应 MQTT client ID, 用于标志 client 身份, 最长 256 字节
-username: 用于登录 MQTT broker 的 username, 最长 64 字节
-password: 用于登录 MQTT broker 的 password, 最长 64 字节
-cert_key_ID: 证书 ID, 目前支持一套 cert 证书, 参数为 0
-CA_ID: CA ID, 目前支持一套 CA 证书, 参数为 0
+- username: MQTT broker username, max 64 bytes
+- password: MQTT broker password, max 64 bytes
+- cert_key_ID: certificate ID (currently supports one cert set — use 0)
+- CA_ID: CA ID (currently supports one CA — use 0)
 path: 资源路径, 最长 32 字节
 
-### AT+MQTTCLIENTID - 配置 MQTT 客户端 ID
-设置指令:
+### AT+MQTTCLIENTID — Configure MQTT client ID
+Command:
 
 AT+MQTTCLIENTID=<LinkID><"client_id">
 
-功能:
-设置 MQTT 客户端 ID, 将会覆盖 AT+MQTTUSERCFG 中 clientID 参数,
+Purpose:
+Set client ID (overrides client_id from AT+MQTTUSERCFG).
 用户可通过 AT+MQTTCLIENTID 设置较长的 clientID.
 
 响应:
@@ -78,7 +76,7 @@ OK或ERROR
 LinkID: 当前只支持 0
 client_id: 对应 MQTT client ID, 用于标志 client 身份, 最长 256 字节
 
-### AT+MQTTUSERNAME - 配置 MQTT 登录用户名
+### AT+MQTTUSERNAME — Configure MQTT username
 设置指令:
 
 AT+MQTTUSERNAME=<LinkID><"username">
@@ -96,7 +94,7 @@ OK或ERROR
 LinkID: 当前只支持 0
 username: 对应 MQTT username, 用于登录 MQTT broker, 最长 256 字节
 
-### AT+MQTTPASSWORD - 配置 MQTT 登录密码
+### AT+MQTTPASSWORD — Configure MQTT password
 设置指令:
 
 AT+MQTTPASSWORD=<LinkID><"password">
@@ -114,7 +112,7 @@ OK或ERROR
 LinkID: 当前只支持 0
 password: 对应 MQTT password, 用于登录 MQTT broker, 最长 256 字节
 
-### AT+MQTTCONNCFG - 配置 MQTT 连接属性
+### AT+MQTTCONNCFG — Configure MQTT connection properties
 设置指令:
 
 AT+MQTTCONNCFG=<LinkID>,<keepalive>,<disable_clean_session>,<"lwt_topic">,<"lwt_msg">,<lwt_qos>,<lwt_retain>
@@ -129,31 +127,28 @@ OK或ERROR
 参数说明:
 
 LinkID: 当前只支持 0
-keepalive: MQTT PING 超时时间,范围为 [60, 7200], 单位为秒. 默认 120
-disable_clean_session: MQTT 清理会话标志, 参数为 0 或 1, 默认为 0
-lwt_topic: 遗嘱 topic, 最长 64 字节
-lwt_msg: 遗嘱 message, 最长 64 字节
-lwt_qos: 遗嘱 QoS, 参数可选 0, 1, 2, 默认为 0
-lwt_retain: 遗嘱 retain, 参数可选 0, 1, 默认为 0
+- keepalive: MQTT PING timeout in seconds, range [60, 7200], default 120
+- disable_clean_session: clean session flag (0 or 1), default 0
+- lwt_topic: Last Will topic, max 64 bytes
+- lwt_msg: Last Will message, max 64 bytes
+- lwt_qos: Last Will QoS (0, 1, 2), default 0
+- lwt_retain: Last Will retain (0 or 1), default 0
 
-### AT+MQTTCONN
-设置指令:
-
+### AT+MQTTCONN — Connect to MQTT broker
+Command:
 AT+MQTTCONN=<LinkID>,<"host">,<port>,<reconnect>
 
-功能:
-连接指定 MQTT broker
+Purpose:
+Connect to the specified MQTT broker.
 
-响应:
+Response:
+OK or ERROR
 
-OK或ERROR
+Query:
+AT+MQTTCONN?
 
-查询指令:
-
-### AT+MQTTCONN?
-
-功能:
-查询 AT 已连接的 MQTT broker
+Purpose:
+Query the MQTT broker connection status.
 
 响应:
 
@@ -162,10 +157,10 @@ AT+MQTTCONN:<LinkID>,<state>,<scheme><"host">,<port>,<"path">,<reconnect>
 参数说明:
 
 LinkID: 当前只支持 0
-host: 连接 MQTT broker 域名, 最大 128 字节
-port: 连接 MQTT broker 端口, 最大 65535
-path: 资源路径, 最长 32 字节
-reconnect: 是否重连 MQTT, 若设置为 1, 需要消耗较多内存资源
+- host: MQTT broker hostname, max 128 bytes
+- port: MQTT broker port (1–65535)
+- path: resource path, max 32 bytes
+- reconnect: auto‑reconnect (1 uses additional memory)
 state: MQTT 当前状态, 状态说明如下:
 0: 连接未初始化
 1: 已设置 MQTTUSERCFG
@@ -195,12 +190,12 @@ AT+ALIYUN_MQTTCONN=<"host">,<port>,<"ProductKey">,<"DeviceName">,<"DeviceSecret"
 功能:
 连接指定的阿里云MQTT broker
 
-参数说明:
-host: 连接阿里云的MQTT broker 域名, 详情请参考[**阿里云域名格式**](https://help.aliyun.com/document_detail/147356.html?spm=a2c4g.11186623.6.587.253b4006W32crS)
-port: 连接 MQTT broker 端口, 最大 65535 默认 1883
-ProductKey: 设备所属产品的ProductKey，即物联网平台为产品颁发的全局唯一标识符
-DeviceName: 设备在产品内的唯一标识符。DeviceName与设备所属产品的ProductKey组合，作为设备标识，用来与物联网平台进行连接认证和通信。
-DeviceSecret: 物联网平台为设备颁发的设备密钥，用于认证加密。需与DeviceName成对使用。
+Parameters:
+- host: Alibaba Cloud broker domain (see Alibaba docs link)
+- port: broker port (default 1883)
+- ProductKey: product-level identifier issued by Alibaba Cloud
+- DeviceName: unique device identifier within the product
+- DeviceSecret: device secret used for authentication (paired with DeviceName)
 
 响应:
 
@@ -344,63 +339,47 @@ LinkID: 当前只支持 0
 
 
 ### microbit makecode块
-- 初始化设置块
-![image](image/init.png)
+- Initialization block: set TX/RX pins, Wi‑Fi SSID/password, MQTT server IP and port (default 1883). Use the "+" to set extra options.
+  ![image](image/init.png)
 
- 在初始化设置块中，首先要设置TX(发送)和RX(接收)端口引脚,然后是设置模块需要连接的wifi账号和密码，初始化还需要设置自己mqtt服务器的ip和端口（默认为1883），同时点击➕可以设置其他信息。
-
-- 阿里云服务器设置块
-![image](image/aliyun introduction.png)
-	在阿里云控制台找到相对应的域名，设备所属产品的ProductKey、设备在产品内的唯一标识符DeviceName、物联网平台为设备颁发的设备密钥DeviceSecret
-	详情请点击[**这里**](https://help.aliyun.com/document_detail/73729.html?spm=a2c4g.11186623.6.591.52a8209fIv26gP)
+- Alibaba Cloud block: enter the domain, ProductKey, DeviceName and DeviceSecret (see Alibaba docs).
+  ![image](image/aliyun introduction.png)
 - 消息订阅块
 
 ![image](image/sub.png)
 
-消息订阅快是用来订阅主题然后设置消息接受的模块，其topic后输入你想订阅的主题名称，后面的Qos为你订阅消息传输设置。
-当输入数字为0时: 服务器发送的一条消息，用户最多能收到一次，也就是说服务器力向用户发送消息，如果发送失败，也就算了；
-当输入数字为1时: 服务器发送的一条消息，用户至少能收到一次，也就是说服务器向用户发送消息，如果发送失败，会继续重试，直到用户收到消息为止，但是因为重传的原因，用户有可能会收到重复的消息；
-当输入数字为2时: 服务器发送的一条消息，用户确保能收到而且只收到一次，也就是说服务器尽力向用户发送消息，如果发送失败，会继续重试，直到用户收到消息为止，同时保证用户不会因为消息重传而收到重复的消息。
+- Subscribe block: specify topic and QoS (0/1/2). QoS behavior:
+  - 0: at most once (no retries)
+  - 1: at least once (retries may cause duplicates)
+  - 2: exactly once (no duplicates)
   
-- 消息发送块
-  
-![image](image/pub.png)
+- Publish block: specify topic and message.
+  ![image](image/pub.png)
 
-向用户发为主题的发送内容，输入你需要以哪个主题推送消息和消息内容。
+- Receive block: reads messages for subscribed topics.
+  ![image](image/rec.png)
 
-- 消息接收块
-  
-![image](image/rec.png)
+- HTTP mode block: set HTTP server domain/IP and port (default 80).
+  ![image](image/http.png)
 
-接收你所订阅的某个主题推送过来的消息。
-
-- http模式配置块
-  
-![image](image/http.png)
-
-设置http服务器的域名（或IP）和端口，默认80。
-
-- http模式get请求块
-  
-![image](image/get_method.png)
-
-发送get请求。
+- HTTP GET block: send GET requests.
+  ![image](image/get_method.png)
 
 
-### mqtt模式演示
+### MQTT demo
 
 ![image](image/last.png)
 
-    解释：mqtt物联网模块设置P1，P2引脚为发送接收引脚，设置Wi-Fi配置，连接Wi-Fi；连接mqtt服务器，端口为1883，之后订阅主题“test”，并设置至少能接受到一次消息，当按下microbit A键之后，向主题“testtopic”推送消息"hello world"，同时也接收来自主题“test”推送过来的数据，并在microbit上显示出来。
+    Explanation: module uses P1/P2 for TX/RX, configures Wi‑Fi, connects to MQTT broker (port 1883), subscribes to "test" (QoS ≥ 1). Press micro:bit A to publish "hello world" to "testtopic" and display incoming "test" messages on the micro:bit.
 
-### http模式演示
+### HTTP demo
 
 ![image](image/http_example.png)
 
-    解释：mqtt物联网模块设置P1，P2引脚为发送接收引脚，设置Wi-Fi配置，连接Wi-Fi；连接http服务器，端口为80，当按下microbit A键之后，mqtt模块发送get请求"test",并且把接收到的请求数据在microbit点阵屏上显示。
+    Explanation: module uses P1/P2 for TX/RX, configures Wi‑Fi, connects to HTTP server (port 80). Press micro:bit A to send a GET request "test" and display the response on the micro:bit LED matrix.
 
-### 阿里云 mqtt模式演示
+### Alibaba Cloud MQTT demo
 ![image](image/aliyun.jpg)
 
-	解释：mqtt物联网模块设置P1，P2引脚为发送接收引脚，设置Wi-Fi配置，连接Wi-Fi；连接阿里云服务器，端口为1883，当按下microbit A键之后，mqtt模块向topic(/a1gVfAJo2pv/emakefun/user/update)发送"helloworld",发送的数据我们可以通过查看阿里云日志服务里面的数据和状态，看到对应的日志;同时也接收来自主题"/a1gVfAJo2pv/emakefun/user/get"推送过来的数据，并在microbit上显示出来。
+    Explanation: module uses P1/P2 for TX/RX, configures Wi‑Fi, connects to Alibaba Cloud broker (port 1883). Press micro:bit A to publish to topic `/a1gVfAJo2pv/emakefun/user/update` and check messages via Alibaba Cloud logs; incoming messages on `/a1gVfAJo2pv/emakefun/user/get` are displayed on the micro:bit.
 	
