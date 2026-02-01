@@ -27,10 +27,10 @@ namespace MQTT {
     let MQTT_SERVER_IP = EMMQTT_STR_TYPE_IS_NONE;
     let MQTT_SERVER_PORT = 1883;
 
-    // 新增：TLS scheme，默认 2 (TLS 无服务器证书验证) —— 最适合旧 ESP8266 连接 HiveMQ
-    let EMMQTT_SCHEME = 2  // 1: 普通 TCP, 2: TLS 无验证 (推荐 HiveMQ 8883), 3: TLS 验证服务器
+    // Added: TLS scheme, default 2 (TLS without server certificate verification) — best for older ESP8266 connecting to HiveMQ
+    let EMMQTT_SCHEME = 2  // 1: plain TCP, 2: TLS no-verify (recommended for HiveMQ 8883), 3: TLS verify server certificate
 
-    let HTTP_RESPONSE_STR = EMMQTT_STR_TYPE_IS_NONE;
+    let HTTP_RESPONSE_STR = EMMQTT_STR_TYPE_IS_NONE; 
     let HTTP_CONNECT_STATUS = EMMQTT_BOOL_TYPE_IS_FALSE;
     let MQTT_TOPIC: any = EMMQTT_STR_TYPE_IS_NONE
     let MQTT_MESSGE: any = EMMQTT_STR_TYPE_IS_NONE
@@ -38,7 +38,7 @@ namespace MQTT {
     
     let EMMQTT_ANSWER_CMD = EMMQTT_STR_TYPE_IS_NONE
     let EMMQTT_ANSWER_CONTENT = EMMQTT_STR_TYPE_IS_NONE
-	//阿里云三要素
+	// Aliyun credentials (productKey, deviceName, deviceSecret)
 	let EMMQTT_ALIYUN_PRODUCTKEY = EMMQTT_STR_TYPE_IS_NONE
 	let EMMQTT_ALIYUN_DEVICENAME = EMMQTT_STR_TYPE_IS_NONE
 	let EMMQTT_ALIYUN_DEVICESECRET = EMMQTT_STR_TYPE_IS_NONE
@@ -121,8 +121,8 @@ namespace MQTT {
     //% receive.fieldEditor="gridpicker" receive.fieldOptions.columns=3
     //% send.fieldEditor="gridpicker" send.fieldOptions.columns=3
     //% blockId=em_mqtt_setup
-    //% block="WIFI连接 | 引脚设置: | 接收数据 TX: %receive| 发送数据 RX: %send | WIFI: | 名称: %SSID| 密码: %PASSWORD 启动连接"
-    //% subcategory="WIFI连接"
+    //% block="Wi‑Fi connect | Pins: RX %receive | TX %send | SSID: %SSID | Password: %PASSWORD | Start"
+    //% subcategory="Wi‑Fi"
     export function em_wifi_connect(/*serial*/receive: SerialPin, send: SerialPin,
         /*wifi*/SSID: string, PASSWORD: string
         ): void {
@@ -132,15 +132,15 @@ namespace MQTT {
         MQTT_SSIDPWD = PASSWORD;
         emmqtt_serial_init();
         emqtt_connect_wifi();
-        basic.pause(10000);  // 增加等待，确保 Wi-Fi 连接成功
+        basic.pause(10000);  // add wait to ensure Wi‑Fi connects successfully
     }
 
-    // 新增：允许手动设置 TLS 模式（默认已是 2，HiveMQ 推荐）
+    // Added: allow manual TLS scheme setting (default is 2, recommended for HiveMQ)
     //% blockId=em_mqtt_set_tls_scheme
-    //% block="MQTT 设置 TLS 模式 %scheme (1=普通TCP 1883, 2=TLS无验证 8883推荐, 3=TLS验证服务器 8883)"
+    //% block="MQTT set TLS scheme %scheme (1=TCP 1883, 2=TLS no-verify (8883 recommended), 3=TLS verify server 8883)"
     //% scheme.min=1 scheme.max=3 scheme.defl=2
     //% weight=104
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_set_tls_scheme(scheme: number): void {
         EMMQTT_SCHEME = scheme;
     }
@@ -155,8 +155,8 @@ namespace MQTT {
     */
     //% weight=102
     //% blockId=em_mqtt_connect
-    //% block="MQTT连接 | 服务器: %serverIp| 端口: %serverPort || 客户端ID: %clientId | 用户名: %username | 密码: %clientPwd"
-    //% subcategory="MQTT模式"
+    //% block="MQTT connect | Server: %serverIp | Port: %serverPort || Client ID: %clientId | Username: %username | Password: %clientPwd"
+    //% subcategory="MQTT mode"
     export function em_mqtt_connect(/*mqtt*/ serverIp: string, serverPort: number, clientId?: string, username?: string, clientPwd?: string
         ): void {
         MQTT_CLIENT_ID = clientId || "default_client";
@@ -168,12 +168,12 @@ namespace MQTT {
     }
 
     /**
-     * 阿里云连接（保持原功能，如果不用可忽略）
+     * Aliyun connection (preserves original behavior; ignore if unused)
      */
     //% weight=101
     //% blockId=em_mqtt_aliyun_connect
-    //% block="MQTT模块连接阿里云服务初始设置 | 阿里云服务器: %serverIp| 端口: %serverPort| 产品key: %productKey|设备名称: %deviceName|设备秘钥: %deviceSecret  || 客户端ID: %clientId | 客户端用户名: %username | 客户端密码: %clientPwd"
-    //% subcategory="ALIYUNMQTT模式"
+    //% block="MQTT module Aliyun setup | Aliyun Server: %serverIp | Port: %serverPort | Product key: %productKey | Device name: %deviceName | Device secret: %deviceSecret || Client ID: %clientId | Client username: %username | Client password: %clientPwd"
+    //% subcategory="ALIYUN MQTT mode"
     export function em_mqtt_aliyun_connect(/*mqtt*/ serverIp: string, serverPort: number, productKey: string, deviceName: string, deviceSecret: string, clientId?: string, username?: string, clientPwd?: string
         ): void {
         MQTT_CLIENT_ID = clientId || "default_client";
@@ -196,34 +196,34 @@ namespace MQTT {
         }
     }
 
-    // 标准 MQTT 连接（使用 TLS scheme=2）
+    // Standard MQTT connection (uses TLS scheme=2)
     function emmqtt_connect_mqtt(): void {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
         }
-        // scheme 从变量读取，默认 2；keepalive 120 秒；clean session 1（新会话）
+        // scheme read from variable (default 2); keepalive 120s; clean session 1 (new session)
         serial.writeString("AT+MQTTUSERCFG=0," + EMMQTT_SCHEME + ",\"" + MQTT_CLIENT_ID + "\",\"" + MQTT_CLIENT_NAME + "\",\"" + MQTT_CLIENT_PASSWORD + "\",120,1,\"\"\r\n");
         basic.pause(2000);
-        // 自动重连开启 (1)
+        // auto reconnect enabled (1)
         serial.writeString("AT+MQTTCONN=0,\"" + MQTT_SERVER_IP + "\"," + MQTT_SERVER_PORT + ",1\r\n");
         basic.pause(5000);
     }
 
-    // 阿里云 MQTT 连接（同样应用 TLS scheme）
+    // Aliyun MQTT connection (also uses TLS scheme)
     function emmqtt_connect_aliyun_mqtt(): void {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
         }
-        // 这里假设阿里云也用相同配置（如果需要特殊签名，可再调整）
+        // Assume Aliyun uses the same configuration (adjust if special signing is needed)
         serial.writeString("AT+MQTTUSERCFG=0," + EMMQTT_SCHEME + ",\"" + MQTT_CLIENT_ID + "\",\"" + MQTT_CLIENT_NAME + "\",\"" + MQTT_CLIENT_PASSWORD + "\",120,1,\"\"\r\n");
         basic.pause(2000);
         serial.writeString("AT+MQTTCONN=0,\"" + MQTT_SERVER_IP + "\"," + MQTT_SERVER_PORT + ",1\r\n");
         basic.pause(5000);
     }
 
-    //% blockId=mqtt_publish_basic block="MQTT向话题(TOPIC) %topic 发送数据 %data"
+    //% blockId=mqtt_publish_basic block="MQTT publish to topic %topic data %data"
     //% weight=100
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_publish_basic(topic: string, data: any): void {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
@@ -236,9 +236,9 @@ namespace MQTT {
     /**
      * Set MQTT subscribe
      */
-    //% blockId=mqtt_subscribe block="MQTT订阅话题 %topic|QOS %qos"
+    //% blockId=mqtt_subscribe block="MQTT subscribe topic %topic | QOS %qos"
     //% weight=101
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_subscribe(topic: string, qos: number): void {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
@@ -251,9 +251,9 @@ namespace MQTT {
     /**
      * MQTT message handler
      */
-    //% blockId=em_mqtt_get_topic_message block="MQTT获取主题 %topic 数据"
+    //% blockId=em_mqtt_get_topic_message block="MQTT get topic %topic data"
     //% weight=100
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_get_topic_message(topic: string,  handler: (message: string) => void) {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
