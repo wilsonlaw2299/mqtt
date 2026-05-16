@@ -1,4 +1,3 @@
-
 const EMMQTT_BOOL_TYPE_IS_TRUE = true
 const EMMQTT_BOOL_TYPE_IS_FALSE = false
 const EMMQTT_ERROR_TYPE_IS_SUCCE = 0
@@ -35,10 +34,10 @@ namespace MQTT {
     
     let EMMQTT_ANSWER_CMD = EMMQTT_STR_TYPE_IS_NONE
     let EMMQTT_ANSWER_CONTENT = EMMQTT_STR_TYPE_IS_NONE
-	//阿里云三要素
-	let EMMQTT_ALIYUN_PRODUCTKEY = EMMQTT_STR_TYPE_IS_NONE
-	let EMMQTT_ALIYUN_DEVICENAME = EMMQTT_STR_TYPE_IS_NONE
-	let EMMQTT_ALIYUN_DEVICESECRET = EMMQTT_STR_TYPE_IS_NONE
+    // Aliyun credentials
+    let EMMQTT_ALIYUN_PRODUCTKEY = EMMQTT_STR_TYPE_IS_NONE
+    let EMMQTT_ALIYUN_DEVICENAME = EMMQTT_STR_TYPE_IS_NONE
+    let EMMQTT_ALIYUN_DEVICESECRET = EMMQTT_STR_TYPE_IS_NONE
     // //animation
     let EMMQTT_WIFI_ICON = 1
     let EMMQTT_MQTT_ICON = 1
@@ -129,8 +128,8 @@ namespace MQTT {
     //% receive.fieldEditor="gridpicker" receive.fieldOptions.columns=3
     //% send.fieldEditor="gridpicker" send.fieldOptions.columns=3
     //% blockId=em_mqtt_setup
-    //% block="WIFI连接 | 引脚设置: | 接收数据 TX: %receive| 发送数据 RX: %send | WIFI: | 名称: %SSID| 密码: %PASSWORD 启动连接"
-    //% subcategory="WIFI连接"
+    //% block="Wi‑Fi connect | Pin setup: | RX pin: %receive | TX pin: %send | Wi‑Fi: | SSID: %SSID | Password: %PASSWORD start connection"
+    //% subcategory="WiFi connection"
     export function em_wifi_connect(/*serial*/receive: SerialPin, send: SerialPin,
         /*wifi*/SSID: string, PASSWORD: string
         ): void {
@@ -157,8 +156,8 @@ namespace MQTT {
     //% receive.fieldEditor="gridpicker" receive.fieldOptions.columns=3
     //% send.fieldEditor="gridpicker" send.fieldOptions.columns=3
     //% blockId=em_mqtt_connect
-    //% block="MQTT物联网服务初始设置 | 服务器: %serverIp| 端口: %serverPort || 客户端ID: %clientId | 客户端用户名: %username | 客户端密码: %clientPwd"
-    //% subcategory="MQTT模式"
+    //% block="MQTT IoT service initial setup | Server: %serverIp | Port: %serverPort || Client ID: %clientId | Username: %username | Password: %clientPwd"
+    //% subcategory="MQTT mode"
     export function em_mqtt_connect(/*mqtt*/ serverIp: string, serverPort: number, clientId?: string, username?: string, clientPwd?: string
         ): void {
        
@@ -188,8 +187,8 @@ namespace MQTT {
     //% receive.fieldEditor="gridpicker" receive.fieldOptions.columns=3
     //% send.fieldEditor="gridpicker" send.fieldOptions.columns=3
     //% blockId=em_mqtt_aliyun_connect
-    //% block="MQTT模块连接阿里云服务初始设置 | 阿里云服务器: %serverIp| 端口: %serverPort| 产品key: %productKey|设备名称: %deviceName|设备秘钥: %deviceSecret  || 客户端ID: %clientId | 客户端用户名: %username | 客户端密码: %clientPwd"
-    //% subcategory="ALIYUNMQTT模式"
+    //% block="MQTT Aliyun initial setup | Aliyun server: %serverIp | Port: %serverPort | ProductKey: %productKey | DeviceName: %deviceName | DeviceSecret: %deviceSecret || Client ID: %clientId | Username: %username | Password: %clientPwd"
+    //% subcategory="Aliyun MQTT mode"
     export function em_mqtt_aliyun_connect(/*mqtt*/ serverIp: string, serverPort: number, productKey: string, deviceName: string, deviceSecret: string, clientId?: string, username?: string, clientPwd?: string
         ): void {
        
@@ -210,9 +209,9 @@ namespace MQTT {
 
     
 
-    //% blockId=mqtt_publish_basic block="MQTT向话题(TOPIC) %topic 发送数据 %data"
+    //% blockId=mqtt_publish_basic block="MQTT publish data %data to topic %topic"
     //% weight=100
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_publish_basic(topic: string, data: any): void {
         //AT+MQTTPUB=0,"topic","test",1,0
         // mqtt_publish(topic, data, 1, 0);
@@ -229,9 +228,9 @@ namespace MQTT {
      * @param topic Mqtt topic; eg: test
      * @param qos QOS; eg: 0
     */
-    //% blockId=mqtt_subscribe block="MQTT订阅话题 %topic|QOS %qos"
+    //% blockId=mqtt_subscribe block="MQTT subscribe to topic %topic | QoS %qos"
     //% weight=101
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_subscribe(topic: string, qos: number): void {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
@@ -246,9 +245,9 @@ namespace MQTT {
      * @param topic Mqtt topic; eg: test
      * @param qos QOS; eg: 0
     */
-    //% blockId=em_mqtt_get_topic_message block="MQTT获取主题 %topic 数据"
+    //% blockId=em_mqtt_get_topic_message block="MQTT get data from topic %topic"
     //% weight=100
-    //% subcategory="MQTT模式"
+    //% subcategory="MQTT mode"
     export function em_mqtt_get_topic_message(topic: string,  handler: (message: string) => void) {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init()
@@ -450,8 +449,8 @@ namespace MQTT {
     //% receive.fieldEditor="gridpicker" receive.fieldOptions.columns=3
     //% send.fieldEditor="gridpicker" send.fieldOptions.columns=3
     //% blockId=em_http_connect
-    //% block="MQTT物联网模块连接HTTP服务器 服务器地址 %serverIp 端口 %serverPort"
-    //% subcategory="HTTP模式"
+    //% block="MQTT IoT module connect to HTTP server Address: %serverIp | Port: %serverPort"
+    //% subcategory="HTTP mode"
     export function em_http_connect(/*mqtt*/ serverIp: string, serverPort: number
         ): void {
         // Emmqtt_serial_init();
@@ -474,9 +473,9 @@ namespace MQTT {
         // serial.setRxBufferSize(500);
     }
 
-    //% blockId=em_http_get block="物联网模块HTTP模式发送GET请求地址%topic"
+    //% blockId=em_http_get block="MQTT IoT module send GET request to topic %topic"
     //% weight=98
-    //% subcategory="HTTP模式"
+    //% subcategory="HTTP mode"
     export function em_http_get(topic: string): string {
         if (!EMMQTT_SERIAL_INIT) {
             emmqtt_serial_init();

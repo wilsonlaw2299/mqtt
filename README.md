@@ -403,8 +403,9 @@ Description: Configure the module pins (e.g. P1 and P2) as TX/RX, set Wi‑Fi cr
 
 Description: Configure TX/RX pins and Wi‑Fi, connect to an HTTP server (port 80). On micro:bit button A the module sends a GET request `test` and displays the response on the micro:bit LED matrix.
 
-### 阿里云 mqtt模式演示
+
+### Aliyun MQTT mode demo
 ![image](image/aliyun.jpg)
 
-	解释：mqtt物联网模块设置P1，P2引脚为发送接收引脚，设置Wi-Fi配置，连接Wi-Fi；连接阿里云服务器，端口为1883，当按下microbit A键之后，mqtt模块向topic(/a1gVfAJo2pv/emakefun/user/update)发送"helloworld",发送的数据我们可以通过查看阿里云日志服务里面的数据和状态，看到对应的日志;同时也接收来自主题"/a1gVfAJo2pv/emakefun/user/get"推送过来的数据，并在microbit上显示出来。
+Description: Configure the module pins (e.g. P1 and P2) as TX/RX, set Wi‑Fi credentials and connect. Connect to the Aliyun MQTT server (port 1883). On micro:bit button A the module publishes "helloworld" to topic `/a1gVfAJo2pv/emakefun/user/update`. You can view the sent message and status in Aliyun Log Service. The module also receives messages from `/a1gVfAJo2pv/emakefun/user/get` and displays them on the micro:bit.
 	
