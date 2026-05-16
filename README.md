@@ -1,403 +1,407 @@
 # EMmqtt
-[English](README.md) 中文版
 
-esp8266-mqtt无线模块是emakefun公司基于乐鑫科技的wifi芯片ESP8266基础上重新研发的串口转wifi的物联网模块，该模块采用AT配置方式来支持wifi无线通信，AT指令全面兼容[乐鑫官方指令库（V3.0.0）](https://www.espressif.com/sites/default/files/documentation/4a-esp8266_at_instruction_set_cn.pdf)，在此基础上添加了MQTT指令，并且全部封装成scratch，mixly，Makecode图形化编程块支持arduino，micro:bit。让用户非常容易接收和发送物联网信息，远程物联网控制从未如此简单。
+EMmqtt (esp8266-mqtt) is a serial-to-Wi-Fi IoT module developed by emakefun based on Espressif's ESP8266 Wi‑Fi chipset. The module uses AT commands to configure wireless networking and is fully compatible with Espressif's official AT instruction set [V3.0.0](https://www.espressif.com/sites/default/files/documentation/4a-esp8266_at_instruction_set_cn.pdf). Additional MQTT commands have been added and wrapped into graphical blocks for Scratch/Mixly/MakeCode to support Arduino and micro:bit, making it easy to send and receive IoT messages and enabling simple remote control.
 
 ![image](image/index.png)
 
-## 硬件参数
+## Hardware Specifications
 
-- 工作电压：5V
-- 接口速率：9600 bps
-- 无线频率：2.4GHz
-- 接口类型：PH2.0-4Pin (G V TX TX)
-- 无线模式：IEEE802.11b/g/n
-- SRAM：160KB
-- 外置Flash：4MB
-- 支持低功耗：<240mA
-- 模块尺寸：4 * 2.1cm
-- 安装方式：M4螺钉螺母固定
+- Operating voltage: 5V
+- UART baud rate: 9600 bps
+- Wireless frequency: 2.4 GHz
+- Connector: PH2.0-4Pin (G V TX RX)
+- Wireless modes: IEEE 802.11 b/g/n
+- SRAM: 160 KB
+- External Flash: 4 MB
+- Sleep current (typ): <240 mA
+- Module size: 4 × 2.1 cm
+- Mounting: M4 screws and nuts
 
-## 模块特点：
+## Module Features
 
-- 内置低功率 32 位 CPU：可以兼作应用处理器
-- 内置协议：TCP/IP 协议栈
-- 加密类型：WPA WPA2/WPA2–PSK
-- 支持乐鑫官方AT标准指令集
-- 支持连接标准MQTT协议和TTL串口到无线的应用
+- Built-in low-power 32‑bit CPU (can be used as an application processor)
+- Built‑in TCP/IP protocol stack
+- Security: WPA/WPA2/WPA2‑PSK
+- Compatible with Espressif's official AT command set
+- Supports standard MQTT and serial(TTL)→Wi‑Fi applications
 
-## MQTT扩展AT指令
+## MQTT AT Command Extensions
 
-### AT+MQTTUSERCFG - 配置 MQTT 用户属性
-设置指令:
+### AT+MQTTUSERCFG — Configure MQTT user properties
+Set command:
+```
 AT+MQTTUSERCFG=<LinkID>,<scheme>,<"client_id">,<"username">,<"password">,<cert_key_ID>,<CA_ID>,<"path">
+```
 
-功能:
-设置 MQTT 用户配置
+Description:
+Configure MQTT user properties.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-scheme:
-1: MQTT over TCP
-2: MQTT over TLS(no certificate verify)
-3: MQTT over TLS(verify server certificate)
-4: MQTT over TLS(provide client certificate)
-5: MQTT over TLS(verify server certificate and provide client certificate)
-6: MQTT over WebSocket(based on TCP)
-7: MQTT over WebSocket Secure(based on TLS, no certificate verify)
-8: MQTT over WebSocket Secure(based on TLS, verify server certificate)
-9: MQTT over WebSocket Secure(based on TLS, provide client certificate)
-10: MQTT over WebSocket Secure(based on TLS, verify server certificate and provide client certificate)
-client_id: 对应 MQTT client ID, 用于标志 client 身份, 最长 256 字节
-username: 用于登录 MQTT broker 的 username, 最长 64 字节
-password: 用于登录 MQTT broker 的 password, 最长 64 字节
-cert_key_ID: 证书 ID, 目前支持一套 cert 证书, 参数为 0
-CA_ID: CA ID, 目前支持一套 CA 证书, 参数为 0
-path: 资源路径, 最长 32 字节
+- LinkID: currently only 0 is supported
+- scheme: transport scheme
+	- 1: MQTT over TCP
+	- 2: MQTT over TLS (no certificate verification)
+	- 3: MQTT over TLS (verify server certificate)
+	- 4: MQTT over TLS (provide client certificate)
+	- 5: MQTT over TLS (verify server certificate and provide client certificate)
+	- 6: MQTT over WebSocket (based on TCP)
+	- 7: MQTT over WebSocket Secure (based on TLS, no certificate verify)
+	- 8: MQTT over WebSocket Secure (based on TLS, verify server certificate)
+	- 9: MQTT over WebSocket Secure (based on TLS, provide client certificate)
+	- 10: MQTT over WebSocket Secure (based on TLS, verify server certificate and provide client certificate)
+- client_id: MQTT client ID (identifies client), max 256 bytes
+- username: MQTT login username, max 64 bytes
+- password: MQTT login password, max 64 bytes
+- cert_key_ID: certificate ID (currently supports one cert set, use 0)
+- CA_ID: CA ID (currently supports one CA set, use 0)
+- path: resource path, max 32 bytes
 
-### AT+MQTTCLIENTID - 配置 MQTT 客户端 ID
-设置指令:
+### AT+MQTTCLIENTID — Set MQTT client ID
+Set command:
 
-AT+MQTTCLIENTID=<LinkID><"client_id">
+```
+AT+MQTTCLIENTID=<LinkID>,<"client_id">
+```
 
-功能:
-设置 MQTT 客户端 ID, 将会覆盖 AT+MQTTUSERCFG 中 clientID 参数,
-用户可通过 AT+MQTTCLIENTID 设置较长的 clientID.
+Description:
+Set the MQTT client ID; this overrides the `client_id` value from `AT+MQTTUSERCFG`. Use this to set a longer client ID if required.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-client_id: 对应 MQTT client ID, 用于标志 client 身份, 最长 256 字节
+- LinkID: currently only 0 is supported
+- client_id: MQTT client ID, max 256 bytes
 
-### AT+MQTTUSERNAME - 配置 MQTT 登录用户名
-设置指令:
+### AT+MQTTUSERNAME — Set MQTT login username
+Set command:
 
-AT+MQTTUSERNAME=<LinkID><"username">
+```
+AT+MQTTUSERNAME=<LinkID>,<"username">
+```
 
-功能:
-设置 MQTT 登录用户名, 将会覆盖 AT+MQTTUSERCFG 中 username 参数,
-用户可通过 AT+MQTTUSERNAME 设置较长的用户名.
+Description:
+Set the MQTT login username; this overrides the `username` value from `AT+MQTTUSERCFG`.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-username: 对应 MQTT username, 用于登录 MQTT broker, 最长 256 字节
+- LinkID: currently only 0 is supported
+- username: MQTT username, max 256 bytes
 
-### AT+MQTTPASSWORD - 配置 MQTT 登录密码
-设置指令:
+### AT+MQTTPASSWORD — Set MQTT login password
+Set command:
 
-AT+MQTTPASSWORD=<LinkID><"password">
+```
+AT+MQTTPASSWORD=<LinkID>,<"password">
+```
 
-功能:
-设置 MQTT 登录密码, 将会覆盖 AT+MQTTUSERCFG 中 password 参数,
-用户可通过 AT+MQTTPASSWORD 设置较长的密码.
+Description:
+Set the MQTT login password; this overrides the `password` value from `AT+MQTTUSERCFG`.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-password: 对应 MQTT password, 用于登录 MQTT broker, 最长 256 字节
+- LinkID: currently only 0 is supported
+- password: MQTT password, max 256 bytes
 
-### AT+MQTTCONNCFG - 配置 MQTT 连接属性
-设置指令:
+### AT+MQTTCONNCFG — Configure MQTT connection properties
+Set command:
 
+```
 AT+MQTTCONNCFG=<LinkID>,<keepalive>,<disable_clean_session>,<"lwt_topic">,<"lwt_msg">,<lwt_qos>,<lwt_retain>
+```
 
-功能:
-设置 MQTT 连接配置
+Description:
+Configure MQTT connection options.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-keepalive: MQTT PING 超时时间,范围为 [60, 7200], 单位为秒. 默认 120
-disable_clean_session: MQTT 清理会话标志, 参数为 0 或 1, 默认为 0
-lwt_topic: 遗嘱 topic, 最长 64 字节
-lwt_msg: 遗嘱 message, 最长 64 字节
-lwt_qos: 遗嘱 QoS, 参数可选 0, 1, 2, 默认为 0
-lwt_retain: 遗嘱 retain, 参数可选 0, 1, 默认为 0
+- LinkID: currently only 0 is supported
+- keepalive: MQTT PING timeout in seconds, range [60, 7200], default 120
+- disable_clean_session: clean session flag (0 or 1), default 0
+- lwt_topic: Last Will topic, max 64 bytes
+- lwt_msg: Last Will message, max 64 bytes
+- lwt_qos: Last Will QoS (0, 1, 2), default 0
+- lwt_retain: Last Will retain flag (0 or 1), default 0
 
-### AT+MQTTCONN
-设置指令:
+### AT+MQTTCONN — Connect to MQTT broker
+Set command:
 
+```
 AT+MQTTCONN=<LinkID>,<"host">,<port>,<reconnect>
+```
 
-功能:
-连接指定 MQTT broker
+Description:
+Connect to the specified MQTT broker.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-查询指令:
+Query command:
 
-### AT+MQTTCONN?
+#### AT+MQTTCONN?
 
-功能:
-查询 AT 已连接的 MQTT broker
+Description:
+Query the MQTT broker connection status.
 
-响应:
+Response:
 
-AT+MQTTCONN:<LinkID>,<state>,<scheme><"host">,<port>,<"path">,<reconnect>
+```
+AT+MQTTCONN:<LinkID>,<state>,<scheme>,<"host">,<port>,<"path">,<reconnect>
+```
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-host: 连接 MQTT broker 域名, 最大 128 字节
-port: 连接 MQTT broker 端口, 最大 65535
-path: 资源路径, 最长 32 字节
-reconnect: 是否重连 MQTT, 若设置为 1, 需要消耗较多内存资源
-state: MQTT 当前状态, 状态说明如下:
-0: 连接未初始化
-1: 已设置 MQTTUSERCFG
-2: 已设置 MQTTCONNCFG
-3: 连接已断开
-4: 已建立连接
-5: 已连接, 但未订阅 topic
-6: 已连接, 已订阅过 topic
-scheme:
-1: MQTT over TCP
-2: MQTT over TLS(no certificate verify)
-3: MQTT over TLS(verify server certificate)
-4: MQTT over TLS(provide client certificate)
-5: MQTT over TLS(verify server certificate and provide client certificate)
-6: MQTT over WebSocket(based on TCP)
-7: MQTT over WebSocket Secure(based on TLS, no certificate verify)
-8: MQTT over WebSocket Secure(based on TLS, verify server certificate)
-9: MQTT over WebSocket Secure(based on TLS, provide client certificate)
-10: MQTT over WebSocket Secure(based on TLS, verify server certificate and provide client certificate)
+- LinkID: currently only 0 is supported
+- host: MQTT broker hostname (max 128 bytes)
+- port: MQTT broker port (max 65535)
+- path: resource path (max 32 bytes)
+- reconnect: whether to auto‑reconnect (1 uses more memory)
+- state: connection status:
+	- 0: not initialized
+	- 1: MQTTUSERCFG set
+	- 2: MQTTCONNCFG set
+	- 3: disconnected
+	- 4: connected
+	- 5: connected but not subscribed
+	- 6: connected and subscribed
+- scheme: same scheme values as `AT+MQTTUSERCFG`
 
-### AT+ALIYUN_MQTTCONN?
+### AT+ALIYUN_MQTTCONN — Connect to Aliyun MQTT broker
+Set command:
 
-设置指令:
-
+```
 AT+ALIYUN_MQTTCONN=<"host">,<port>,<"ProductKey">,<"DeviceName">,<"DeviceSecret">
+```
 
-功能:
-连接指定的阿里云MQTT broker
+Description:
+Connect to a specified Alibaba Cloud (Aliyun) MQTT broker.
 
-参数说明:
-host: 连接阿里云的MQTT broker 域名, 详情请参考[**阿里云域名格式**](https://help.aliyun.com/document_detail/147356.html?spm=a2c4g.11186623.6.587.253b4006W32crS)
-port: 连接 MQTT broker 端口, 最大 65535 默认 1883
-ProductKey: 设备所属产品的ProductKey，即物联网平台为产品颁发的全局唯一标识符
-DeviceName: 设备在产品内的唯一标识符。DeviceName与设备所属产品的ProductKey组合，作为设备标识，用来与物联网平台进行连接认证和通信。
-DeviceSecret: 物联网平台为设备颁发的设备密钥，用于认证加密。需与DeviceName成对使用。
+Parameters:
 
-响应:
+- host: Aliyun MQTT broker hostname. See Aliyun domain format: [here](https://help.aliyun.com/document_detail/147356.html?spm=a2c4g.11186623.6.587.253b4006W32crS)
+- port: MQTT broker port (max 65535), default 1883
+- ProductKey: ProductKey assigned to the product on the IoT platform
+- DeviceName: DeviceName (unique within the product) used for identification and authentication
+- DeviceSecret: DeviceSecret used for authentication (paired with DeviceName)
 
-OK或ERROR
+Response:
 
-### AT+MQTTPUB
-设置指令:
+OK or ERROR
 
+### AT+MQTTPUB — Publish a message
+Set command:
+
+```
 AT+MQTTPUB=<LinkID>,<"topic">,<"data">,<qos>,<retain>
+```
 
-功能:
-在 LinkID上通过 topic 发布数据 data, 其中 data 为字符串消息, 若要发布二进制,请使用 AT+MQTTPUBRAW
+Description:
+Publish a string message (`data`) to a topic on the specified LinkID. For binary payloads use `AT+MQTTPUBRAW`.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-topic: 发布主题, 最长 64 字节
-data: 发布消息, data 不能包含 \0, 请确保整条 AT+MQTTPUB 不超过 AT 指令的最大长度限制
-qos: 发布服务质量, 参数可选 0,1,2, 默认为 0
-retain: 发布 retain
+- LinkID: currently only 0 is supported
+- topic: topic to publish (max 64 bytes)
+- data: message payload (must not contain \0); ensure the full AT command does not exceed the AT command length limit
+- qos: QoS level (0, 1, 2), default 0
+- retain: retain flag
 
-### AT+MQTTPUBRAW
-设置指令:
+### AT+MQTTPUBRAW — Publish binary data
+Set command:
 
+```
 AT+MQTTPUBRAW=<LinkID>,<"topic">,<length>,<qos>,<retain>
+```
 
-功能:
-在 LinkID 上通过 topic 发布数据 data, 其中 data 为二进制数据
+Description:
+Publish binary data of specified `length` to `topic` on the given LinkID.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-等待用户输入 length 大小数据, 之后响应如下:
+After sending the command the module waits for `length` bytes of payload. Response will be:
 
-+MQTTPUB:FAIL
+- `+MQTTPUB:FAIL` or
+- `+MQTTPUB:OK`
 
-或
+Parameters:
 
-+MQTTPUB:OK
+- LinkID: currently only 0 is supported
+- topic: topic to publish (max 64 bytes)
+- length: payload length (limited by available memory)
+- qos: QoS level (0, 1, 2), default 0
+- retain: retain flag
 
-参数说明:
+Note: If the AT port does not receive the specified `length` bytes, the module will wait; any data received during that time is treated as normal data.
 
-LinkID: 当前只支持 0
-topic: 发布主题, 最长 64 字节
-length: 要发布消息长度, 长度受限于当前可用内存
-qos: 发布服务质量, 参数可选 0,1,2, 默认为 0
-retain: 发布 retain
-AT port 未收到指定 length 长度的数据, 将一直等待, 在此期间接收到的数据都会当成普通数据
+### AT+MQTTSUB — Subscribe to a topic
+Set command:
 
-### AT+MQTTSUB
-设置指令:
-
+```
 AT+MQTTSUB=<LinkID>,<"topic">,<qos>
+```
 
-功能:
-订阅指定连接的 MQTT 主题, 可重复多次订阅不同 topic
+Description:
+Subscribe to a topic on the specified LinkID. This command may be used multiple times to subscribe to different topics.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-当收到对应主题订阅的 MQTT 消息时, 将按照如下格式打印消息内容
+When a subscribed message arrives, the module prints:
 
+```
 +MQTTSUBRECV:<LinkID>,<"topic">,<data_length>,data
+```
 
-如果订阅已订阅过的主题, 仍无条件向 MQTT broker 订阅, Log 口打印 ALREADY SUBSCRIBE
+If the topic is already subscribed, the log will print `ALREADY SUBSCRIBE`.
 
-查询指令:
+Query command:
 
-### AT+MQTTSUB?
+#### AT+MQTTSUB?
 
-### 功能:
-查询 MQTT 所有连接上已订阅的 topic
+Description:
+List all subscribed topics for the MQTT connection.
 
-响应:
+Response example:
 
+```
 +MQTTSUB:<LinkID>,<state>,<"topic1">,<qos>
 +MQTTSUB:<LinkID>,<state>,<"topic2">,<qos>
 +MQTTSUB:<LinkID>,<state>,<"topic3">,<qos>
 ...
 OK
-1
-2
-3
-4
-5
-或ERROR
+```
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-state: MQTT 当前状态, 状态说明如下:
-0: 连接未初始化
-1: 已设置 MQTTUSERCFG
-2: 已设置 MQTTCONNCFG
-3: 连接已断开
-4: 已建立连接
-5: 已连接, 但未订阅 topic
-6: 已连接, 已订阅过 topic
-topic*: 订阅过的主题
-qos: 订阅过的 QoS
+- LinkID: currently only 0 is supported
+- state: MQTT connection state (same values as `AT+MQTTCONN?`)
+- topic*: subscribed topic
+- qos: QoS for the subscription
 
-### AT+MQTTUNSUB
-设置指令:
+### AT+MQTTUNSUB — Unsubscribe from a topic
+Set command:
 
+```
 AT+MQTTUNSUB=<LinkID>,<"topic">
+```
 
-功能:
-取消订阅指定连接的 MQTT 主题, 可多次取消不同订阅 topic
+Description:
+Unsubscribe a topic on the specified LinkID. Can be used multiple times for different topics.
 
-响应:
+Response:
 
-OK或ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
-topic: 取消订阅主题, 最长 64 字节
-如果取消未订阅的主题, 仍无条件向 MQTT broker 取消订阅, Log 口打印 NO UNSUBSCRIBE
+- LinkID: currently only 0 is supported
+- topic: topic to unsubscribe (max 64 bytes)
 
-### AT+MQTTCLEAN
-设置指令:
+If the topic was not subscribed, the log will print `NO UNSUBSCRIBE`.
 
+### AT+MQTTCLEAN — Close MQTT client connection
+Set command:
+
+```
 AT+MQTTCLEAN=<LinkID>
+```
 
-功能:
-关闭 MQTT Client 为 LinkID 的连接, 并释放内部占用的资源
+Description:
+Close the MQTT client for the specified LinkID and free internal resources.
 
-响应:
+Response:
 
-OK或者ERROR
+OK or ERROR
 
-参数说明:
+Parameters:
 
-LinkID: 当前只支持 0
+- LinkID: currently only 0 is supported
 
 
-### microbit makecode块
-- 初始化设置块
+### micro:bit MakeCode blocks
+- Initialization block
 ![image](image/init.png)
 
- 在初始化设置块中，首先要设置TX(发送)和RX(接收)端口引脚,然后是设置模块需要连接的wifi账号和密码，初始化还需要设置自己mqtt服务器的ip和端口（默认为1883），同时点击➕可以设置其他信息。
+In the initialization block set the TX (transmit) and RX (receive) pins, the Wi‑Fi SSID and password, and the MQTT server IP and port (default 1883). Click the `+` to configure additional options.
 
-- 阿里云服务器设置块
+- Aliyun (Alibaba Cloud) connection block
 ![image](image/aliyun introduction.png)
-	在阿里云控制台找到相对应的域名，设备所属产品的ProductKey、设备在产品内的唯一标识符DeviceName、物联网平台为设备颁发的设备密钥DeviceSecret
-	详情请点击[**这里**](https://help.aliyun.com/document_detail/73729.html?spm=a2c4g.11186623.6.591.52a8209fIv26gP)
-- 消息订阅块
+
+Enter the Aliyun domain, `ProductKey`, `DeviceName`, and `DeviceSecret` obtained from the Aliyun IoT console. More details: [Aliyun device setup](https://help.aliyun.com/document_detail/73729.html?spm=a2c4g.11186623.6.591.52a8209fIv26gP)
+
+- Subscribe block
 
 ![image](image/sub.png)
 
-消息订阅快是用来订阅主题然后设置消息接受的模块，其topic后输入你想订阅的主题名称，后面的Qos为你订阅消息传输设置。
-当输入数字为0时: 服务器发送的一条消息，用户最多能收到一次，也就是说服务器力向用户发送消息，如果发送失败，也就算了；
-当输入数字为1时: 服务器发送的一条消息，用户至少能收到一次，也就是说服务器向用户发送消息，如果发送失败，会继续重试，直到用户收到消息为止，但是因为重传的原因，用户有可能会收到重复的消息；
-当输入数字为2时: 服务器发送的一条消息，用户确保能收到而且只收到一次，也就是说服务器尽力向用户发送消息，如果发送失败，会继续重试，直到用户收到消息为止，同时保证用户不会因为消息重传而收到重复的消息。
-  
-- 消息发送块
-  
+Use this block to subscribe to a topic and set how messages are received. The `topic` field is the topic name to subscribe to and `QoS` sets the requested delivery guarantee:
+
+- QoS 0: At most once delivery (fire and forget).
+- QoS 1: At least once delivery (may receive duplicates).
+- QoS 2: Exactly once delivery.
+
+- Publish block
+
 ![image](image/pub.png)
 
-向用户发为主题的发送内容，输入你需要以哪个主题推送消息和消息内容。
+Use this block to publish a message to a topic; specify the topic and the message payload.
 
-- 消息接收块
-  
+- Receive block
+
 ![image](image/rec.png)
 
-接收你所订阅的某个主题推送过来的消息。
+Receive messages published to any topic you have subscribed to.
 
-- http模式配置块
-  
+- HTTP mode configuration block
+
 ![image](image/http.png)
 
-设置http服务器的域名（或IP）和端口，默认80。
+Set the HTTP server hostname (or IP) and port (default 80).
 
-- http模式get请求块
-  
+- HTTP GET request block
+
 ![image](image/get_method.png)
 
-发送get请求。
+Send an HTTP GET request.
 
 
-### mqtt模式演示
+### MQTT mode demo
 
 ![image](image/last.png)
 
-    解释：mqtt物联网模块设置P1，P2引脚为发送接收引脚，设置Wi-Fi配置，连接Wi-Fi；连接mqtt服务器，端口为1883，之后订阅主题“test”，并设置至少能接受到一次消息，当按下microbit A键之后，向主题“testtopic”推送消息"hello world"，同时也接收来自主题“test”推送过来的数据，并在microbit上显示出来。
+Description: Configure the module pins (e.g. P1 and P2) as TX/RX, set Wi‑Fi credentials and connect. Connect to the MQTT server (port 1883), subscribe to topic `test` with at least-once delivery, and on micro:bit button A publish `"hello world"` to `testtopic`. The micro:bit will also display messages received from the `test` topic.
 
-### http模式演示
+### HTTP mode demo
 
 ![image](image/http_example.png)
 
-    解释：mqtt物联网模块设置P1，P2引脚为发送接收引脚，设置Wi-Fi配置，连接Wi-Fi；连接http服务器，端口为80，当按下microbit A键之后，mqtt模块发送get请求"test",并且把接收到的请求数据在microbit点阵屏上显示。
+Description: Configure TX/RX pins and Wi‑Fi, connect to an HTTP server (port 80). On micro:bit button A the module sends a GET request `test` and displays the response on the micro:bit LED matrix.
 
 ### 阿里云 mqtt模式演示
 ![image](image/aliyun.jpg)
